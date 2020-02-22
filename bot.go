@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"time"
 	"net/http"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/pkg/errors"
 )
@@ -21,17 +21,17 @@ func NewBot(pref Settings) (*Bot, error) {
 	if pref.Updates == 0 {
 		pref.Updates = 100
 	}
-	
+
+	var netTransport = &http.Transport{
+		Dial: (&net.Dialer{
+			Timeout: time.Duration(pref.NetDialTimeout) * time.Second,
+		}).Dial,
+		TLSHandshakeTimeout: time.Duration(pref.TLSHandshakeTimeout) * time.Second,
+	}
 	client := pref.Client
 	if client == nil {
-		var netTransport = &http.Transport{
-			Dial: (&net.Dialer{
-				Timeout: 15 * time.Second,
-			}).Dial,
-			TLSHandshakeTimeout: 15 * time.Second,
-		}
 		client = &http.Client{
-			Timeout:   time.Second * 15,
+			Timeout:   time.Second * time.Duration(pref.HTTPRequestTimeout),
 			Transport: netTransport,
 		}
 	}
@@ -96,6 +96,15 @@ type Settings struct {
 
 	// HTTP Client used to make requests to telegram api
 	Client *http.Client
+
+	// Net Dial Timeout
+	NetDialTimeout int
+
+	// TLS Handshake Timeout
+	TLSHandshakeTimeout int
+
+	// HTTP Request Timeout
+	HTTPRequestTimeout int
 }
 
 // Update object represents an incoming update.

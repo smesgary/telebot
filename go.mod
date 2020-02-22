@@ -1,4 +1,4 @@
-module telebot
+module .
 
 go 1.11
 

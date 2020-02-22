@@ -24,12 +24,12 @@ func NewBot(pref Settings) (*Bot, error) {
 	if client == nil {
 		var netTransport = &http.Transport{
 			Dial: (&net.Dialer{
-				Timeout: 5 * time.Second,
+				Timeout: 15 * time.Second,
 			}).Dial,
-			TLSHandshakeTimeout: 5 * time.Second,
+			TLSHandshakeTimeout: 15 * time.Second,
 		}
 		client = &http.Client{
-			Timeout:   time.Second * 10,
+			Timeout:   time.Second * 15,
 			Transport: netTransport,
 		}
 	}

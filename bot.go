@@ -19,10 +19,19 @@ func NewBot(pref Settings) (*Bot, error) {
 	if pref.Updates == 0 {
 		pref.Updates = 100
 	}
-
+	
 	client := pref.Client
 	if client == nil {
-		client = http.DefaultClient
+		var netTransport = &http.Transport{
+			Dial: (&net.Dialer{
+				Timeout: 5 * time.Second,
+			}).Dial,
+			TLSHandshakeTimeout: 5 * time.Second,
+		}
+		client = &http.Client{
+			Timeout:   time.Second * 10,
+			Transport: netTransport,
+		}
 	}
 
 	if pref.URL == "" {
